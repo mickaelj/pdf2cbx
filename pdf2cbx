@@ -1,3 +1,10 @@
+#!/bin/sh
+
+
+# INSTALL :
+# Simply move this script in /usr/local/bin and use "chmod +x" 
+#
+# REQUIRE :
 # pdftocairo, rar and zip commands, use pdftocbx -t to test requirements
 # pdftocbx -h print help
 #
@@ -69,8 +76,7 @@ convert ()
 		else
 			echo "$PdfDir temp directory exist. Something wrong with last conversion ?"
 	fi
-	cp "$curDir/"$PdfFile "$TMP/$PdfDir"  zenity --progress
-
+	cp "$curDir/"$PdfFile "$TMP/$PdfDir" 
 	echo "Extract PDF to images, sometimes take few minutes according to file size "
 	pdftocairo -jpeg "$TMP/$PdfDir/"$PdfFile "$TMP/$PdfDir/"$PdfFile
 	
