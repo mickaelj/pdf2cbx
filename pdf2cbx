@@ -1,0 +1,120 @@
+# pdftocairo, rar and zip commands, use pdftocbx -t to test requirements
+# pdftocbx -h print help
+#
+# TODO :
+# 1) Test if command work 
+# 2) do work with space named file or directory
+# 3) imagemagik ?
+# mickael.j@gmail.com
+
+PrgName="pdftocbx"
+Version="0.1"
+OPTERROR=33
+# set TMP dir
+TMP="/tmp"
+neededCommands="pdftocairo rar zip"
+
+testDep ()
+{
+	command -v command >/dev/null 2>&1 || 
+	{
+    	echo "WARNING> \"command\" not found. Check requirements skipped !"
+       	return 1 ;
+    }
+	for requirement in ${neededCommands} ; 
+		do
+        	echo -n "checking for \"$requirement\" ... " ;
+        	command -v ${requirement} > /dev/null && {
+            echo "ok" ;
+            continue ;
+            } || {
+            echo "required but not found !" ;
+            _return=1 ;
+            }
+       	done
+        [ -z "${_return}" ] || { 
+                echo "ERR > Requirement missing." >&2 ; 
+                exit 1 ;
+        }
+}
+
+version ()
+{
+	echo "$PrgName version $Version"
+}
+
+thishelp ()
+{
+	echo "Usage & options"
+	echo "-f File_to_convert"
+	echo "-z create a CBZ archive (default)"
+	echo "-r create a CBR archive"
+	echo "-v Version"
+	echo "-h Help"
+	echo "-t Test dependencies"
+	echo ""
+	echo "a temp dir is created and removed after completation. You can set temp dir in script."
+}
+
+convert ()
+{
+
+	PdfFile=$1
+	curDir=$PWD
+	PdfDir=${PdfFile%%.*}
+	if [ ! -d "$TMP/$PdfDir" ]
+		then
+			mkdir "$TMP/$PdfDir" 
+			echo "$PdfDir temp directory created"		
+		else
+			echo "$PdfDir temp directory exist. Something wrong with last conversion ?"
+	fi
+	cp "$curDir/"$PdfFile "$TMP/$PdfDir"  zenity --progress
+
+	echo "Extract PDF to images, sometimes take few minutes according to file size "
+	pdftocairo -jpeg "$TMP/$PdfDir/"$PdfFile "$TMP/$PdfDir/"$PdfFile
+	
+	case $ARC in
+		z) 
+		echo "Create CBZ archive"
+		zip -n  "$TMP/$PdfDir/"$PdfDir.cbz "$TMP/$PdfDir/"*.jpg;
+		mv "$TMP/$PdfDir/"$PdfDir.cbz "$curDir";
+		echo "$curDir/$PdfDir.cbz done !";;
+		r) 
+		echo "Create CBZ archive"
+		rar a "$TMP/$PdfDir/"$PdfDir.cbr "$TMP/$PdfDir/"*.jpg  > /dev/null;
+		mv "$TMP/$PdfDir/"$PdfDir.cbr "$curDir";
+		echo "$curDir/$PdfDir.cbz done !";;
+		: ) echo "no archive type given (-z | -x), try -help to fix it";;
+	esac
+
+
+	rm "$TMP/$PdfDir/"*
+	rmdir "$TMP/$PdfDir/"
+}
+
+
+if [ -z $1 ]
+	then
+		echo "no file given (-f arg)"
+		echo "Usage: $PrgName option (-f|vh)"
+		echo "-help to list options"
+		exit $OPTERROR
+fi
+
+while getopts ":f:zrtvh" Option
+	do
+  		case $Option in
+  			f) file=$OPTARG;
+				echo $OPTARG;
+				convert "$file";;
+			z) ARC=z;;
+			r) ARC=r;;
+			t) testDep;;
+		    v) version;;
+			h) thishelp;;
+			:) echo "argument required, try -h to help";;
+			\?) echo "invalid option, try -h to help";
+			   exit 1;;
+ 		esac
+  	done
