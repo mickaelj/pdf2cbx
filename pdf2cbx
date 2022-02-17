@@ -11,11 +11,11 @@
 # TODO :
 # 1) Test if command work 
 # 2) do work with space named file or directory
-# 3) imagemagik ?
+# 3) multilanguage
 # mickael.j@gmail.com
 
 PrgName="pdftocbx"
-Version="0.1"
+Version="0.1-1"
 OPTERROR=33
 # set TMP dir
 TMP="/tmp"
@@ -83,14 +83,14 @@ convert ()
 	case $ARC in
 		z) 
 		echo "Create CBZ archive"
-		zip -n  "$TMP/$PdfDir/"$PdfDir.cbz "$TMP/$PdfDir/"*.jpg;
+		zip   "$TMP/$PdfDir/"$PdfDir.cbz "$TMP/$PdfDir/"*.jpg > /dev/null;
 		mv "$TMP/$PdfDir/"$PdfDir.cbz "$curDir";
 		echo "$curDir/$PdfDir.cbz done !";;
 		r) 
-		echo "Create CBZ archive"
+		echo "Create CBR archive"
 		rar a "$TMP/$PdfDir/"$PdfDir.cbr "$TMP/$PdfDir/"*.jpg  > /dev/null;
 		mv "$TMP/$PdfDir/"$PdfDir.cbr "$curDir";
-		echo "$curDir/$PdfDir.cbz done !";;
+		echo "$curDir/$PdfDir.cbr done !";;
 		: ) echo "no archive type given (-z | -x), try -help to fix it";;
 	esac
 
