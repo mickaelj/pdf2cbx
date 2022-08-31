@@ -19,6 +19,7 @@ Version="0.1-1"
 OPTERROR=33
 # set TMP dir
 TMP="/tmp"
+ARC=z
 neededCommands="pdftocairo rar zip"
 
 testDep ()
@@ -60,7 +61,11 @@ thishelp ()
 	echo "-h Help"
 	echo "-t Test dependencies"
 	echo ""
+	echo "the file must be specified last!"
 	echo "a temp dir is created and removed after completation. You can set temp dir in script."
+	echo ""
+	echo "example usage:"
+	echo "pdf2cbx -z -f example.pdf"
 }
 
 convert ()
@@ -77,9 +82,9 @@ convert ()
 			echo "$PdfDir temp directory exist. Something wrong with last conversion ?"
 	fi
 	cp "$curDir/"$PdfFile "$TMP/$PdfDir" 
-	echo "Extract PDF to images, sometimes take few minutes according to file size "
+	echo "Extracting PDF to images, sometimes take few minutes according to file size... "
 	pdftocairo -jpeg "$TMP/$PdfDir/"$PdfFile "$TMP/$PdfDir/"$PdfFile
-	
+	echo "Successfully converted $PdfDir"
 	case $ARC in
 		z) 
 		echo "Create CBZ archive"
@@ -91,7 +96,7 @@ convert ()
 		rar a "$TMP/$PdfDir/"$PdfDir.cbr "$TMP/$PdfDir/"*.jpg  > /dev/null;
 		mv "$TMP/$PdfDir/"$PdfDir.cbr "$curDir";
 		echo "$curDir/$PdfDir.cbr done !";;
-		: ) echo "no archive type given (-z | -x), try -help to fix it";;
+		: ) echo "no archive type given (-z | -r), try -help to fix it";;
 	esac
 
 
@@ -111,8 +116,7 @@ fi
 while getopts ":f:zrtvh" Option
 	do
   		case $Option in
-  			f) file=$OPTARG;
-				echo $OPTARG;
+			f) file=$OPTARG;
 				convert "$file";;
 			z) ARC=z;;
 			r) ARC=r;;
