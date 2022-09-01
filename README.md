@@ -8,8 +8,11 @@ INSTALL :
 
 REQUIRE :
 
--  pdftocairo, rar and zip commands, use pdftocbx -t to test requirements
--  pdftocbx -h print help
+-  Needs pdftocairo, rar and zip commands, use pdftocbx -t to test requirements
+
+HELP :
+
+- Run pdf2cbx -h 
 
 TODO :
 - 1) Test if command work 
